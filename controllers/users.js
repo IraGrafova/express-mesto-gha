@@ -1,33 +1,25 @@
-
-const users = [];
-let id = 0;
-
-
+const User = require('../models/user');
 
 const getUsers = ('/users', (req, res) => {
-  res.status(200).send(users);
+  User.find({})
+  .then(users => res.status(200).send(users))
+  .catch(err => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack}))
+
 });
 
 const getUserById = ('/users/:id', (req, res) => {
   const { id } = req.params;
-  const user = users.find((item) => item.id === Number(id));
 
-  if (user) {
-    res.status(200).send(user);
-    return;
-  }
-
-  res.status(404).send({message: 'User not found'});
+  User.findById(req.params.id)
+  .then(user => res.status(200).send(user))
+  .catch(err => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack}))
 });
 
 const createUser = ('/users', (req, res) => {
-  id += 1;
-  const newUser = {
-    id,
-   ...req.body,
-  };
-  users.push(newUser);
-  res.status(201).send(newUser);
+  User.create(req.body)
+  .then(user => res.status(201).send(user))
+  .catch(err => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack}))
+
 });
 
 module.exports = {getUsers, getUserById, createUser}

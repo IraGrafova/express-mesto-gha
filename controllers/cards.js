@@ -7,17 +7,18 @@ const getCards = ('/cards', (req, res) => {
 });
 
 const createCard = ('/cards', (req, res) => {
-  Card.create(req.body)
+  Card.create({
+    ...req.body,
+    owner: req.user._id,
+  })
     .then((card) => res.status(201).send(card))
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 });
 
 const deleteCard = ('/cards/:cardId', (req, res) => {
-  Card.delete(req.params.id) // или как
+  Card.findByIdAndRemove(req.params.id)
     .then((card) => res.status(201).send(card))
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 });
 
 module.exports = { getCards, createCard, deleteCard };
-
-//  console.log(req.user._id); // _id станет доступен

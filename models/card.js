@@ -13,11 +13,12 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
   owner: { // ссылка на модель автора карточки, тип ObjectId, обязательное поле;
-    type: ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+  // eslint-disable-next-line max-len
   likes: { // список лайкнувших пост пользователей, массив ObjectId, по умолчанию — пустой массив (поле default);
-    type: ObjectId,
+    type: Array,
     default: [],
   },
   createdAt: { // дата создания, тип Date, значение по умолчанию Date.now.

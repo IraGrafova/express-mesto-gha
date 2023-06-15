@@ -29,4 +29,18 @@ const createUser = ('/users', (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 });
 
-module.exports = { getUsers, getUserById, createUser };
+const changeUser = ('/users/me', (req, res) => {
+  User.findByIdAndUpdate(req.user._id, req.body)
+    .then((user) => res.status(201).send(user))
+    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+});
+
+const changeUserAvatar = ('/users/me/avatar', (req, res) => {
+  User.findByIdAndUpdate(req.user._id, req.body)
+    .then((user) => res.status(201).send(user))
+    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+});
+
+module.exports = {
+  getUsers, getUserById, createUser, changeUserAvatar, changeUser,
+};

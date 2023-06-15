@@ -3,7 +3,7 @@ const { getCards, createCard, deleteCard } = require('../controllers/cards');
 
 router.get('/cards', getCards);
 
-router.get('/cards/:id', deleteCard);
+router.delete('/cards/:id', deleteCard);
 
 router.post('/cards', createCard);
 

@@ -8,11 +8,10 @@ const getUsers = ('/users', (req, res) => {
 
 const getUserById = ('/users/:id', (req, res) => {
   User.findById(req.params.id)
-    .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        res.status(400).send({
+      if (err.message.includes('failed for value')) {
+        res.status(404).send({
           message: 'User not found',
         });
       } else {

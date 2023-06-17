@@ -8,7 +8,7 @@ const getUsers = ('/users', (req, res) => {
 
 const getUserById = ('/users/:id', (req, res) => {
   User.findById(req.params.id)
-  .orFail(() => new Error('Not found'))
+    .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('failed for value')) {
@@ -19,8 +19,7 @@ const getUserById = ('/users/:id', (req, res) => {
         res.status(404).send({
           message: 'Пользователь по указанному _id не найден',
         });
-      }
-      else {
+      } else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
@@ -28,7 +27,7 @@ const getUserById = ('/users/:id', (req, res) => {
 
 const createUser = ('/users', (req, res) => {
   User.create(req.body)
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
@@ -41,7 +40,7 @@ const createUser = ('/users', (req, res) => {
 const changeUser = ('/users/me', (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body)
     .orFail(() => new Error('Not found'))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
@@ -58,7 +57,7 @@ const changeUser = ('/users/me', (req, res) => {
 const changeUserAvatar = ('/users/me/avatar', (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body)
     .orFail(() => new Error('Not found'))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });

@@ -11,7 +11,7 @@ const createCard = ('/cards', (req, res) => {
     ...req.body,
     owner: req.user._id,
   })
-    .then((card) => res.status(201).send(card))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
@@ -24,13 +24,19 @@ const createCard = ('/cards', (req, res) => {
 const deleteCard = ('/cards/:cardId', (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error('Not found'))
-    .then((card) => res.status(202).send(card))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(404).send({
           message: 'Карточка с указанным _id не найдена',
         });
-      } else {
+      }
+      else if (err.message.includes('failed for value')) {
+        res.status(400).send({
+          message: 'Некорректный _id карточки',
+        });
+      }
+      else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
@@ -43,7 +49,7 @@ const likeCard = ('/cards/:cardId/likes', (req, res) => {
     { new: true },
   )
     .orFail(() => new Error('Not found'))
-    .then((likes) => res.status(201).send(likes))
+    .then((likes) => res.status(200).send(likes))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });

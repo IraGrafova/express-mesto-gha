@@ -11,8 +11,8 @@ const getUserById = ('/users/:id', (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('failed for value')) {
-        res.status(404).send({
-          message: 'User not found',
+        res.status(400).send({
+          message: 'Пользователь по указанному _id не найден',
         });
       } else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });

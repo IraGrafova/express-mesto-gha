@@ -30,13 +30,11 @@ const deleteCard = ('/cards/:cardId', (req, res) => {
         res.status(404).send({
           message: 'Карточка с указанным _id не найдена',
         });
-      }
-      else if (err.message.includes('failed for value')) {
+      } else if (err.message.includes('failed for value')) {
         res.status(400).send({
           message: 'Некорректный _id карточки',
         });
-      }
-      else {
+      } else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });

@@ -51,7 +51,7 @@ const likeCard = ('/cards/:cardId/likes', (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((likes) => res.status(200).send(likes))
     .catch((err) => {
-      if (err.message.includes('validation failed')) {
+      if (err.message.includes('failed for value')) {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       } else if (err.message === 'Not found') {
         res.status(404).send({
@@ -72,7 +72,7 @@ const dislikeCard = ('/cards/:cardId/likes', (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((likes) => res.status(200).send(likes))
     .catch((err) => {
-      if (err.message.includes('validation failed')) {
+      if (err.message.includes('failed for value')) {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       } else if (err.message === 'Not found') {
         res.status(404).send({

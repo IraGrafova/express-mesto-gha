@@ -8,13 +8,19 @@ const getUsers = ('/users', (req, res) => {
 
 const getUserById = ('/users/:id', (req, res) => {
   User.findById(req.params.id)
+  .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message.includes('failed for value')) {
         res.status(400).send({
+          message: 'Некорректный _id пользователя',
+        });
+      } else if (err.message === 'Not found') {
+        res.status(404).send({
           message: 'Пользователь по указанному _id не найден',
         });
-      } else {
+      }
+      else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });

@@ -17,10 +17,10 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
   // eslint-disable-next-line max-len
-  likes: { // список лайкнувших пост пользователей, массив ObjectId, по умолчанию — пустой массив (поле default);
-    type: Array,
+  likes: [{ // список лайкнувших пост пользователей, массив ObjectId, по умолчанию — пустой массив (поле default);
+    type: mongoose.Schema.Types.ObjectId,
     default: [],
-  },
+  }],
   createdAt: { // дата создания, тип Date, значение по умолчанию Date.now.
     type: Date,
     default: Date.now,

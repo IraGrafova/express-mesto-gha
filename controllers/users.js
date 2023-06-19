@@ -11,7 +11,7 @@ const getUserById = ('/users/:id', (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.message.includes('failed for value')) {
+      if (err.name === 'CastError') {
         res.status(400).send({
           message: 'Некорректный _id пользователя',
         });
@@ -27,9 +27,9 @@ const getUserById = ('/users/:id', (req, res) => {
 
 const createUser = ('/users', (req, res) => {
   User.create(req.body)
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (err.message.includes('validation failed')) {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
@@ -45,7 +45,7 @@ const changeUser = ('/users/me', (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.message.includes('Validation failed')) {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else if (err.message === 'Not found') {
         res.status(404).send({
@@ -65,7 +65,7 @@ const changeUserAvatar = ('/users/me/avatar', (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.message.includes('Validation failed')) {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else if (err.message === 'Not found') {
         res.status(404).send({

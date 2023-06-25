@@ -13,19 +13,7 @@ const getUserById = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Некорректный _id пользователя',
-        });
-      } else if (err.message === 'Not found') {
-        res.status(404).send({
-          message: 'Пользователь по указанному _id не найден',
-        });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -41,6 +29,12 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   // вытаскиваем email и password из запроса
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(403).send({ message: 'Введите данные' });
+    return;
+  }
+
   // найти пользователя
   User.findOne({ email })
     .select('+password')
@@ -62,7 +56,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else { // если не совпадает - вернуть ошибку
-            res.status(403).send({ message: 'Неправильный пароль' });
+            res.status(401).send({ message: 'Передан неверный логин или пароль' });
           }
         });
     })
@@ -76,17 +70,7 @@ const changeUser = (req, res) => {
   })
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      } else if (err.message === 'Not found') {
-        res.status(404).send({
-          message: 'Пользователь с указанным _id не найден',
-        });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
 const changeUserAvatar = (req, res) => {
@@ -96,17 +80,7 @@ const changeUserAvatar = (req, res) => {
   })
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
-      } else if (err.message === 'Not found') {
-        res.status(404).send({
-          message: 'Пользователь с указанным _id не найден',
-        });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
 module.exports = {

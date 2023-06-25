@@ -5,6 +5,7 @@ const helmet = require('helmet');
 
 const router = require('./routes/index');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middlewares/error');
 // const {
 //   createUser, login,
 // } = require('./controllers/users');
@@ -32,5 +33,7 @@ app.use(cookieParser());
 // app.post('/signup', createUser);
 
 app.use(router);
+
+app.use(errorHandler);
 
 app.listen(3000);

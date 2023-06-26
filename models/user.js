@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле "avatar" должно быть заполнено'],
     validate: {
+
+    //   validator: function(v) {
+    //     return /\d{3}-\d{3}-\d{4}/.test(v);
+    //   },
+    //   message: props => `${props.value} is not a valid phone number!`
+    // },
       validator: (v) => validator.isURL(v),
       message: 'Некорректный URL',
     },

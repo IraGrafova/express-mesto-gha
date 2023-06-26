@@ -51,4 +51,6 @@ console.log(err)
   next();
 };
 
-module.exports = errorHandler;
+
+module.exports = errorHandler
+//module.exports = {errorHandler, ValidationError, AccessError, UserNotFound, SignupError};

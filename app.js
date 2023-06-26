@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
 
 const router = require('./routes/index');
 const cookieParser = require('cookie-parser');
@@ -33,6 +34,8 @@ app.use(cookieParser());
 // app.post('/signup', createUser);
 
 app.use(router);
+
+app.use(errors());
 
 app.use(errorHandler);
 

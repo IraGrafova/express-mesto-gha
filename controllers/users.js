@@ -9,7 +9,14 @@ const getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
-const getUserById = (req, res) => {
+const getMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => new Error('Not found'))
+    .then((user) => res.status(200).send(user))
+    .catch(next);
+};
+
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
@@ -63,7 +70,7 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
-const changeUser = (req, res) => {
+const changeUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
@@ -73,7 +80,7 @@ const changeUser = (req, res) => {
     .catch(next);
 };
 
-const changeUserAvatar = (req, res) => {
+const changeUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
@@ -84,5 +91,5 @@ const changeUserAvatar = (req, res) => {
 };
 
 module.exports = {
-  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login,
+  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login, getMe,
 };

@@ -11,7 +11,7 @@ router.post('/signup', createUser);
 
 router.use(auth);
 
-router.use(userRoutes);
+router.use('/users', userRoutes);
 router.use(cardRoutes);
 
 

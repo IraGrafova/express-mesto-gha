@@ -1,12 +1,14 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
-  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login,
+  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login, getMe,
 } = require('../controllers/users');
 
-router.get('/users', getUsers);
+router.get('/', getUsers);
 
-router.get('/users/:id', getUserById);
+router.get('/:id', getUserById);
+
+router.get('/me', getMe);
 
 //router.post('/users', createUser);
 router.post('/signup', celebrate({
@@ -20,8 +22,8 @@ router.post('/signup', celebrate({
 
 router.post('/signin', login);
 
-router.patch('/users/me/avatar', changeUserAvatar);
+router.patch('/me/avatar', changeUserAvatar);
 
-router.patch('/users/me', changeUser);
+router.patch('/me', changeUser);
 
 module.exports = router;

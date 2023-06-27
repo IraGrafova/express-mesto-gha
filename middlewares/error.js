@@ -32,7 +32,7 @@ class SignupError extends Error {
 
 
 const errorHandler = (err, req, res, next) => {
-console.log(err)
+// console.log(err)
   let error;
 //console.log(error)
   if (err.statusCode = 400) {
@@ -44,7 +44,7 @@ console.log(err)
   } else if (err.statusCode = 409) {
     error = new SignupError(err);
   }
-  console.log('!!!!!!!!!!'+error)
+  //console.log('!!!!!!!!!!'+error)
   //else if () {} else {}
 
   res.status(error.statusCode).send({message: error.message});

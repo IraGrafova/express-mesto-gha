@@ -23,16 +23,22 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
+//   console.log(Card.populate('owner'))
 
-  if (req.params.id != req.user._id) {
-    res.status(403).send({ message: 'Нельзя удалять карточки других пользователей' });
-    return;
-  }
+// console.log(req.params.id)
+// console.log(req.user)
+  //
 
+  Card.findByIdAndRemove(req.params.id).populate('owner')
 
-  Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error('Not found'))
-    .then((card) => res.status(200).send(card))
+    .then((card) => {
+      if (req.user._id != card.owner._id) {
+        res.status(403).send({ message: 'Нельзя удалять карточки других пользователей' });
+        return;
+      }
+      res.status(200).send(card)
+      })
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(404).send({

@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const { isValidObjectId } = require('mongoose');
+const {SignupError, ValidationError} = require('../middlewares/error')
 
 const getUsers = (req, res) => {
   User.find({})
@@ -31,7 +32,7 @@ const createUser = (req, res, next) => {
         .then((user) => res.status(201).send({ data: user }))
         .catch(next);
     })
-    .catch(next);
+    .catch(next(new SignupError()));
 };
 
 const login = (req, res, next) => {
@@ -39,8 +40,9 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(403).send({ message: 'Введите данные' });
-    return;
+    next(new ValidationError());
+    // res.status(403).send({ message: 'Введите данные' });
+    // return;
   }
 
   // найти пользователя

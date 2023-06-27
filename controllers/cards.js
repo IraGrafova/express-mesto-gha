@@ -23,6 +23,13 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
+
+  if (req.params.id != req.user._id) {
+    res.status(403).send({ message: 'Нельзя удалять карточки других пользователей' });
+    return;
+  }
+
+
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error('Not found'))
     .then((card) => res.status(200).send(card))
@@ -39,6 +46,7 @@ const deleteCard = (req, res) => {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
+
 };
 
 const likeCard = (req, res) => {

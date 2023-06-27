@@ -10,6 +10,7 @@ const getUsers = (req, res) => {
 };
 
 const getMe = (req, res, next) => {
+  console.log(req.user._id)
   User.findById(req.user._id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))

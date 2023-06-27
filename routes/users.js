@@ -6,7 +6,7 @@ const {
 
 router.get('/', getUsers);
 
-router.get('/:id', getUserById);
+router.get('/users/:id', getUserById);
 
 router.get('/me', getMe);
 
@@ -22,8 +22,8 @@ router.post('/signup', celebrate({
 
 router.post('/signin', login);
 
-router.patch('/me/avatar', changeUserAvatar);
+router.patch('/users/me/avatar', changeUserAvatar);
 
-router.patch('/me', changeUser);
+router.patch('/users/me', changeUser);
 
 module.exports = router;

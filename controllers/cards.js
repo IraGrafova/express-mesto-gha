@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const { AccessError, ValidationError } = require('../middlewares/error');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -7,33 +8,24 @@ const getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   Card.create({
     ...req.body,
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    //.catch(next(new ValidationError('Переданы некорректные данные при создании карточки'))) как правильно оформить
+    .catch(next);
 };
 
 const deleteCard = (req, res) => {
-//   console.log(Card.populate('owner'))
-
-// console.log(req.params.id)
-// console.log(req.user)
-  //
 
   Card.findByIdAndRemove(req.params.id).populate('owner')
 
     .orFail(() => new Error('Not found'))
     .then((card) => {
       if (req.user._id != card.owner._id) {
+        //throw new AccessError('Отсутствуют права для данного действия');
         res.status(403).send({ message: 'Нельзя удалять карточки других пользователей' });
         return;
       }

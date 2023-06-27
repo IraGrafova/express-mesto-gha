@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const { isValidObjectId } = require('mongoose');
-const {SignupError, ValidationError} = require('../middlewares/error')
+const {SignupError, ValidationError, LoginError} = require('../middlewares/error')
 
 const getUsers = (req, res) => {
   User.find({})
@@ -30,9 +30,9 @@ const createUser = (req, res, next) => {
     .then((hashedPassword) => {
       User.create({ ...req.body, password: hashedPassword })
         .then((user) => res.status(201).send({ data: user }))
-        .catch(next);
+        .catch(next(new SignupError('Пользователь с таким email уже существует')));
     })
-    .catch(next(new SignupError()));
+    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -40,7 +40,8 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    next(new ValidationError());
+    throw new ValidationError('Введите данные');
+
     // res.status(403).send({ message: 'Введите данные' });
     // return;
   }
@@ -48,7 +49,7 @@ const login = (req, res, next) => {
   // найти пользователя
   User.findOne({ email })
     .select('+password')
-    .orFail(() => new Error('Пользователь не найден'))
+    .orFail(() => new ValidationError('Пользователь не найден'))
     .then((user) => {
     // проверить совпадает ли пароль
       bcrypt.compare(password, user.password)
@@ -66,7 +67,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else { // если не совпадает - вернуть ошибку
-            res.status(401).send({ message: 'Передан неверный логин или пароль' });
+            throw new LoginError('Передан неверный логин или пароль');
           }
         });
     })

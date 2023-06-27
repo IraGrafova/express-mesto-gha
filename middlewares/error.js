@@ -1,15 +1,23 @@
 class ValidationError extends Error {
   constructor(err) {
     super(err);
-    this.message = 'Переданы некорректные данные при обновлении';
+  //  this.message = 'Переданы некорректные данные при обновлении';
     this.statusCode = 400;
+  }
+};
+
+class LoginError extends Error {
+  constructor(err) {
+    super(err);
+  //  this.message = 'Переданы некорректные данные при обновлении';
+    this.statusCode = 401;
   }
 };
 
 class AccessError extends Error {
   constructor(err) {
     super(err);
-    this.message = 'Отсутствуют права для данного действия';
+    //this.message = 'Отсутствуют права для данного действия';
     this.statusCode = 403;
   }
 };
@@ -25,7 +33,6 @@ class UserNotFound extends Error {
 class SignupError extends Error {
   constructor(err) {
     super(err);
-    this.message = 'Данный email уже существует';
     this.statusCode = 409;
   }
 };
@@ -47,10 +54,10 @@ const errorHandler = (err, req, res, next) => {
   //console.log('!!!!!!!!!!'+error)
   //else if () {} else {}
 
-  res.status(error.statusCode).send({message: error.message});
+  res.status(err.statusCode).send({message: err.message});
   next();
 };
 
 
-module.exports = errorHandler
-//module.exports = {errorHandler, ValidationError, AccessError, UserNotFound, SignupError};
+//module.exports = errorHandler
+module.exports = {errorHandler, ValidationError, LoginError, AccessError, UserNotFound, SignupError};

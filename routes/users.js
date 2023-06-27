@@ -22,8 +22,8 @@ router.post('/signup', celebrate({
 
 router.post('/signin', login);
 
-router.patch('/users/me/avatar', changeUserAvatar);
+router.patch('/me/avatar', changeUserAvatar);
 
-router.patch('/users/me', changeUser);
+router.patch('/me', changeUser);
 
 module.exports = router;

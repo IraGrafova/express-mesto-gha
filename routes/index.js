@@ -27,7 +27,7 @@ router.post('/signup', celebrate({
 
 router.use(auth);
 
-router.use('/users', userRoutes);
+router.use('/users', auth, userRoutes);
 router.use(cardRoutes);
 
 

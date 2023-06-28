@@ -32,13 +32,11 @@ const createUser = (req, res, next) => {
         .then((user) => {
           res.status(201).send({ data: user });
         })
-        .catch(err => {throw new SignupError()}
-        //   err => {
-        //   if (err) {
-        //     throw new SignupError();
-        //   }console.log('another err')
-        // }
-        );
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new SignupError('Пользователь с указанным email уже существует'));
+          }
+        });
     })
     .catch(next);
 };

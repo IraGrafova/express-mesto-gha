@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { LoginError } = require('./errors');
 
 const auth = (req, res, next) => {
   const token = req.cookies.jwt;
@@ -7,7 +8,7 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'SECRET');
   } catch (err) {
-    next(err);
+    next(new LoginError('Отсутствуют права для данного действия'));
   }
 
   req.user = payload;

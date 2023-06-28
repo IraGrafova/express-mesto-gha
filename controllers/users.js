@@ -29,8 +29,16 @@ const createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hashedPassword) => {
       User.create({ ...req.body, password: hashedPassword })
-        .then((user) => res.status(201).send({ data: user }))
-        .catch(next());
+        .then((user) => {
+          res.status(201).send({ data: user });
+        })
+        .catch(err => {throw new SignupError()}
+        //   err => {
+        //   if (err) {
+        //     throw new SignupError();
+        //   }console.log('another err')
+        // }
+        );
     })
     .catch(next);
 };
@@ -49,7 +57,7 @@ const login = (req, res, next) => {
   // найти пользователя
   User.findOne({ email })
     .select('+password')
-    .orFail(() => new ValidationError('Пользователь не найден'))
+    .orFail(() => new LoginError('Пользователь не найден'))
     .then((user) => {
     // проверить совпадает ли пароль
       bcrypt.compare(password, user.password)

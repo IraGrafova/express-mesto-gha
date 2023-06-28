@@ -13,7 +13,7 @@ const errorHandler = (err, req, res, next) => {
   // }
   // //console.log('!!!!!!!!!!'+error)
   // //else if () {} else {}
-console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+err)
+
   res.status(err.statusCode).send({ message: err.message });
   next();
 };

@@ -2,16 +2,16 @@ const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const { isValidObjectId } = require('mongoose');
-const {SignupError, ValidationError, LoginError} = require('../middlewares/error')
+const { SignupError, ValidationError, LoginError } = require('../middlewares/errors');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch(next);
 };
 
 const getMe = (req, res, next) => {
-  console.log(req.user._id)
+  // console.log(req.user._id)
   User.findById(req.user._id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
@@ -30,7 +30,7 @@ const createUser = (req, res, next) => {
     .then((hashedPassword) => {
       User.create({ ...req.body, password: hashedPassword })
         .then((user) => res.status(201).send({ data: user }))
-        .catch(next(new SignupError('Пользователь с таким email уже существует')));
+        .catch(next());
     })
     .catch(next);
 };

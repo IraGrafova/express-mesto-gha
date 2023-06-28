@@ -4,9 +4,9 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 
-const router = require('./routes/index');
 const cookieParser = require('cookie-parser');
-const errorHandler = require('./middlewares/error');
+const router = require('./routes/index');
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -23,6 +23,6 @@ app.use(router);
 
 app.use(errors());
 
-//app.use(errorHandler);
+app.use(errorHandler);
 
 app.listen(3000);

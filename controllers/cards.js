@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { AccessError, ValidationError } = require('../middlewares/error');
+const { AccessError, ValidationError } = require('../middlewares/errors');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -14,12 +14,11 @@ const createCard = (req, res, next) => {
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    //.catch(next(new ValidationError('Переданы некорректные данные при создании карточки'))) как правильно оформить
-    .catch(next);
+    .catch(next(new ValidationError('Переданы некорректные данные при создании карточки')))
+    //.catch(next);
 };
 
 const deleteCard = (req, res) => {
-
   Card.findByIdAndRemove(req.params.id).populate('owner')
 
     .orFail(() => new Error('Not found'))
@@ -29,8 +28,8 @@ const deleteCard = (req, res) => {
         res.status(403).send({ message: 'Нельзя удалять карточки других пользователей' });
         return;
       }
-      res.status(200).send(card)
-      })
+      res.status(200).send(card);
+    })
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(404).send({
@@ -44,7 +43,6 @@ const deleteCard = (req, res) => {
         res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
-
 };
 
 const likeCard = (req, res) => {

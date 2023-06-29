@@ -5,9 +5,9 @@ const {
 
 router.get('/', getUsers);
 
-router.get('/:id', getUserById);
-
 router.get('/me', getMe);
+
+router.get('/:id', getUserById);
 
 //router.post('/users', createUser);
 router.post('/signup', createUser);

@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUserById, createUser, changeUserAvatar, changeUser, login, getMe,
 } = require('../controllers/users');
@@ -9,8 +8,6 @@ router.get('/', getUsers);
 router.get('/:id', getUserById);
 
 router.get('/me', getMe);
-
-
 
 //router.post('/users', createUser);
 router.post('/signup', createUser);

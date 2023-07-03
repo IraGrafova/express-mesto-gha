@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: { // имя пользователя, строка от 2 до 30 символов, обязательное поле

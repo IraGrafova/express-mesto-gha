@@ -6,7 +6,7 @@ const {
   SignupError,
   ValidationError,
   LoginError,
-  UserNotFound: NotFound,
+  NotFound,
 } = require("../middlewares/errors");
 
 const getUsers = (req, res, next) => {

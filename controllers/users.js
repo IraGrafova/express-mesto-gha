@@ -28,8 +28,7 @@ const getUserById = (req, res, next) => {
       } else if(err.message === 'Not found') {
      throw new UserNotFound}
     }
-     ).catch(next)
-    //.catch(next);
+     ).catch(next);
 };
 
 const createUser = (req, res, next) => {

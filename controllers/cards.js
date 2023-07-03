@@ -14,7 +14,10 @@ const createCard = (req, res, next) => {
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    .catch(next(new ValidationError('Переданы некорректные данные при создании карточки')))
+    .catch(err => {
+      if(err.name === 'CastError')
+      {throw new ValidationError('Переданы некорректные данные при создании карточки')}
+      })
     .catch(next);
 };
 

@@ -48,10 +48,10 @@ const createCardJoi = celebrate({
   }),
 });
 
-const idCardJoi = celebrate({
+const idJoi = celebrate({
   params: Joi.object().keys({
     id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
   }),
 });
 
-module.exports = { ValidationError, LoginError, AccessError, UserNotFound, SignupError, createCardJoi, idCardJoi };
+module.exports = { ValidationError, LoginError, AccessError, UserNotFound, SignupError, createCardJoi, idJoi };

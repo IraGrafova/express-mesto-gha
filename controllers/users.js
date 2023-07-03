@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const { isValidObjectId } = require('mongoose');
-const { SignupError, ValidationError, LoginError } = require('../middlewares/errors');
+const { SignupError, ValidationError, LoginError, UserNotFound } = require('../middlewares/errors');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -22,7 +22,14 @@ const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
-    .catch(next);
+    .catch(err => {
+      if(err.name === 'CastError') {
+       throw new ValidationError('Неверный id')
+      } else if(err.message === 'Not found') {
+     throw new UserNotFound}
+    }
+     ).catch(next)
+    //.catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -73,7 +80,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else { // если не совпадает - вернуть ошибку
-            throw new LoginError('Передан неверный логин или пароль');
+            next(new LoginError('Передан неверный логин или пароль'));
           }
         });
     })

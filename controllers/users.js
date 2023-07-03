@@ -26,7 +26,7 @@ const getUserById = (req, res, next) => {
       if(err.name === 'CastError') {
        throw new ValidationError('Неверный id')
       } else if(err.message === 'Not found') {
-     throw new UserNotFound}
+     throw new UserNotFound} //или со скобками вызов
     }
      ).catch(next);
 };

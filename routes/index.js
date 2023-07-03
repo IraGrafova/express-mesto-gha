@@ -39,17 +39,32 @@ router.use('/users', celebrate({
   }),
 }), userRoutes);
 
-router.use('/cards', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
-    likes: Joi.string().pattern(/^[0-9a-fA-F]{24}$/)
-    // about: Joi.string().min(2).max(30),
-    // email: Joi.string().required().email(),
-    // password: Joi.string().required(),
-    //avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
-  }),
-}), cardRoutes);
+// router.use('/cards/:id', celebrate({
+//   body: Joi.object().keys({
+//     // name: Joi.string().min(2).max(30).required(),
+//     // link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
+//     likes: Joi.string().pattern(/^[0-9a-fA-F]{24}$/)
+//     // about: Joi.string().min(2).max(30),
+//     // email: Joi.string().required().email(),
+//     // password: Joi.string().required(),
+//     //avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
+//   }),
+// }), cardRoutes);
+
+// router.use('/cards', celebrate({
+//   body: Joi.object().keys({
+//     // name: Joi.string().min(2).max(30).required(),
+//     // link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
+//     // likes: Joi.string().pattern(/^[0-9a-fA-F]{24}$/)
+//     // about: Joi.string().min(2).max(30),
+//     // email: Joi.string().required().email(),
+//     // password: Joi.string().required(),
+//     //avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
+//   }),
+// }), cardRoutes);
+
+router.use('/cards', cardRoutes);
+
 
 router.patch('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });

@@ -23,10 +23,10 @@ const cardSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     default: [],
     ref: 'user',
-    validate: {
-      validator: (v) => validator.isURL(v),
-      message: 'Некорректный URL',
-    },
+    // validate: {
+    //   validator: (v) => validator.isURL(v),
+    //   message: 'Некорректный URL',
+    // },
   }],
   createdAt: { // дата создания, тип Date, значение по умолчанию Date.now.
     type: Date,

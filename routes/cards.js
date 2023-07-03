@@ -3,14 +3,16 @@ const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
+const { createCardJoi, idCardJoi } = require('../middlewares/errors');
+
 router.get('/', getCards);
 
-router.delete('/:id', deleteCard);
+router.delete('/:id', idCardJoi, deleteCard);
 
-router.post('/', createCard);
+router.post('/', createCardJoi, createCard);
 
-router.put('/:id/likes', likeCard);
+router.put('/:id/likes', idCardJoi, likeCard);
 
-router.delete('/:id/likes', dislikeCard);
+router.delete('/:id/likes', idCardJoi, dislikeCard);
 
 module.exports = router;

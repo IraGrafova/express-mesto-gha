@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { AccessError, ValidationError } = require('../middlewares/errors');
+const { AccessError, ValidationError, UserNotFound } = require('../middlewares/errors');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -48,7 +48,7 @@ const deleteCard = (req, res) => {
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -58,15 +58,13 @@ const likeCard = (req, res) => {
     .then((likes) => res.status(200).send(likes))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        throw new ValidationError('Переданы некорректные данные для постановки/снятия лайка');
       } else if (err.message === 'Not found') {
-        res.status(404).send({
-          message: 'Передан несуществующий _id карточки',
-        });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        console.log(err)
+        throw new UserNotFound();
       }
-    });
+    })
+    .catch(next);
 };
 
 const dislikeCard = (req, res) => {

@@ -1,4 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
+const { celebrate, Joi } = require('celebrate');
+
 class ValidationError extends Error {
   constructor(err) {
     super(err);
@@ -38,4 +40,18 @@ class SignupError extends Error {
   }
 }
 
-module.exports = { ValidationError, LoginError, AccessError, UserNotFound, SignupError };
+const createCardJoi = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
+    likes: Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
+  }),
+});
+
+const idCardJoi = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
+  }),
+});
+
+module.exports = { ValidationError, LoginError, AccessError, UserNotFound, SignupError, createCardJoi, idCardJoi };

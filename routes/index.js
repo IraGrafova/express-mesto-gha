@@ -25,8 +25,7 @@ router.post('/signup', celebrate({
     password: Joi.string().required(),
     avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
   }),
-}),
-createUser);
+}), createUser);
 
 router.use(auth);
 
@@ -44,7 +43,6 @@ router.use('/users', celebrate({
 }), userRoutes);
 
 router.use('/cards', cardRoutes);
-
 
 router.patch('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });

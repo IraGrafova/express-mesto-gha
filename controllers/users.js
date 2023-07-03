@@ -1,8 +1,13 @@
-const bcrypt = require('bcryptjs');
-const jsonWebToken = require('jsonwebtoken');
-const User = require('../models/user');
-const { isValidObjectId } = require('mongoose');
-const { SignupError, ValidationError, LoginError, UserNotFound } = require('../middlewares/errors');
+const bcrypt = require("bcryptjs");
+const jsonWebToken = require("jsonwebtoken");
+const User = require("../models/user");
+const { isValidObjectId } = require("mongoose");
+const {
+  SignupError,
+  ValidationError,
+  LoginError,
+  UserNotFound: NotFound,
+} = require("../middlewares/errors");
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -11,28 +16,29 @@ const getUsers = (req, res, next) => {
 };
 
 const getMe = (req, res, next) => {
-  // console.log(req.user._id)
   User.findById(req.user._id)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new Error("Not found"))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new Error("Not found"))
     .then((user) => res.status(200).send(user))
-    .catch(err => {
-      if(err.name === 'CastError') {
-       throw new ValidationError('Неверный id')
-      } else if(err.message === 'Not found') {
-     throw new UserNotFound} //или со скобками вызов
-    }
-     ).catch(next);
+    .catch((err) => {
+      if (err.name === "CastError") {
+        throw new ValidationError("Неверный id");
+      } else if (err.message === "Not found") {
+        throw new NotFound();
+      }
+    })
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
+  bcrypt
+    .hash(req.body.password, 10)
     .then((hashedPassword) => {
       User.create({ ...req.body, password: hashedPassword })
         .then((user) => {
@@ -40,7 +46,9 @@ const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.code === 11000) {
-            next(new SignupError('Пользователь с указанным email уже существует'));
+            next(
+              new SignupError("Пользователь с указанным email уже существует")
+            );
           }
         });
     })
@@ -52,7 +60,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new ValidationError('Введите данные');
+    throw new ValidationError("Введите данные");
 
     // res.status(403).send({ message: 'Введите данные' });
     // return;
@@ -60,28 +68,32 @@ const login = (req, res, next) => {
 
   // найти пользователя
   User.findOne({ email })
-    .select('+password')
-    .orFail(() => new LoginError('Пользователь не найден'))
+    .select("+password")
+    .orFail(() => new LoginError("Пользователь не найден"))
     .then((user) => {
-    // проверить совпадает ли пароль
-      bcrypt.compare(password, user.password)
-        .then((isValidUser) => {
-          if (isValidUser) { // если совпадает - вернуть пользователя
-            // создать JWT
-            const jwt = jsonWebToken.sign({
+      // проверить совпадает ли пароль
+      bcrypt.compare(password, user.password).then((isValidUser) => {
+        if (isValidUser) {
+          // если совпадает - вернуть пользователя
+          // создать JWT
+          const jwt = jsonWebToken.sign(
+            {
               _id: user._id,
-            }, 'SECRET');
-            // прикрепить его к куке
-            res.cookie('jwt', jwt, {
-              maxAge: 360000,
-              httpOnly: true,
-              sameSite: true,
-            });
-            res.send({ data: user.toJSON() });
-          } else { // если не совпадает - вернуть ошибку
-            next(new LoginError('Передан неверный логин или пароль'));
-          }
-        });
+            },
+            "SECRET"
+          );
+          // прикрепить его к куке
+          res.cookie("jwt", jwt, {
+            maxAge: 360000,
+            httpOnly: true,
+            sameSite: true,
+          });
+          res.send({ data: user.toJSON() });
+        } else {
+          // если не совпадает - вернуть ошибку
+          next(new LoginError("Передан неверный логин или пароль"));
+        }
+      });
     })
     .catch(next);
 };
@@ -91,7 +103,7 @@ const changeUser = (req, res, next) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
   })
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new Error("Not found"))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
@@ -101,11 +113,17 @@ const changeUserAvatar = (req, res, next) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
   })
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new Error("Not found"))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
 
 module.exports = {
-  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login, getMe,
+  getUsers,
+  getUserById,
+  createUser,
+  changeUserAvatar,
+  changeUser,
+  login,
+  getMe,
 };

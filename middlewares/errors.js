@@ -4,7 +4,6 @@ const { celebrate, Joi } = require('celebrate');
 class ValidationError extends Error {
   constructor(err) {
     super(err);
-  //  this.message = 'Переданы некорректные данные при обновлении';
     this.statusCode = 400;
   }
 }
@@ -12,7 +11,6 @@ class ValidationError extends Error {
 class LoginError extends Error {
   constructor(err) {
     super(err);
-  //  this.message = 'Переданы некорректные данные при обновлении';
     this.statusCode = 401;
   }
 }
@@ -20,15 +18,14 @@ class LoginError extends Error {
 class AccessError extends Error {
   constructor(err) {
     super(err);
-    //this.message = 'Отсутствуют права для данного действия';
     this.statusCode = 403;
   }
 }
 
-class UserNotFound extends Error {
+class NotFound extends Error {
   constructor(err) {
     super(err);
-    this.message = 'Пользователь с указанным _id не найден';
+    this.message = 'id не найден';
     this.statusCode = 404;
   }
 }
@@ -54,4 +51,4 @@ const idJoi = celebrate({
   }),
 });
 
-module.exports = { ValidationError, LoginError, AccessError, UserNotFound, SignupError, createCardJoi, idJoi };
+module.exports = { ValidationError, LoginError, AccessError, NotFound, SignupError, createCardJoi, idJoi };

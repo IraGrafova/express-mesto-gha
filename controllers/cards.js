@@ -41,7 +41,11 @@ const deleteCard = (req, res, next) => {
     .populate("owner")
     .orFail(() => new Error("Not found"))
     .then((card) => {
-      res.status(200).send(card);
+      if (req.user._id != card.owner._id) {
+        throw new AccessError("Отсутствуют права для данного действия");
+      } else {
+        res.status(200).send(card);
+      }
     })
     .catch((err) => {
       if (err.message === "Not found") {

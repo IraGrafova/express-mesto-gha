@@ -41,18 +41,25 @@ const deleteCard = (req, res, next) => {
     .populate("owner")
     .orFail(() => new Error("Not found"))
     .then((card) => {
+      console.log('строка 44   '+req.user._id)
+      console.log('строка 45   '+card.owner)
+      console.log('строка 46   '+card.owner._id)
       if (req.user._id != card.owner._id) {
+        console.log('строка 48   '+'error')
         throw new AccessError("Отсутствуют права для данного действия");
       } else {
+        console.log('200OK')
         res.status(200).send(card);
       }
     })
     .catch((err) => {
       if (err.message === "Not found") {
+        console.log('строка 57   '+'new err')
         throw new AccessError("Отсутствуют права для данного действия");
       } else if (err.name === "CastError") {
         throw new ValidationError("Неверный id");
-      }
+      } console.log('61')
+      next()
     })
     .catch(next);
 };

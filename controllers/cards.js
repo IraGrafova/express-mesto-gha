@@ -37,7 +37,7 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .populate("owner")
-    .orFail(() => new NotFound())
+    .orFail(() => new Error("Not found"))
     .then((card) => {
       if (req.user._id != card.owner._id) {
         next(new AccessError("Отсутствуют права для данного действия"));
@@ -49,6 +49,8 @@ const deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(new ValidationError("Неверный id"));
+      } else if (err.message === "Not found") {
+        next(new NotFound());
       }
       next();
     })

@@ -25,7 +25,6 @@ class AccessError extends Error {
 class NotFound extends Error {
   constructor(err) {
     super(err);
-    this.message = 'id не найден';
     this.statusCode = 404;
   }
 }
@@ -37,18 +36,60 @@ class SignupError extends Error {
   }
 }
 
-const createCardJoi = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
-    likes: Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
-  }),
-});
-
 const idJoi = celebrate({
   params: Joi.object().keys({
     id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
   }),
 });
 
-module.exports = { ValidationError, LoginError, AccessError, NotFound, SignupError, createCardJoi, idJoi };
+const signinJoi = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+});
+
+const signupJoi = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+    avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
+  }),
+});
+
+const changeUserJoi = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m),
+  }),
+});
+
+const avatarValidationJoi = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
+  }),
+});
+
+const createCardJoi = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().pattern(/https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]{1,}/m).required(),
+  }),
+});
+
+module.exports = {
+  ValidationError,
+  LoginError,
+  AccessError,
+  NotFound,
+  SignupError,
+  createCardJoi,
+  idJoi,
+  avatarValidationJoi,
+  signinJoi,
+  signupJoi,
+  changeUserJoi,
+};

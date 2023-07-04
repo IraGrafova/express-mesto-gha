@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const {
-  getUsers, getUserById, createUser, changeUserAvatar, changeUser, login, getMe,
+  getUsers, getUserById, changeUser, getMe,
 } = require('../controllers/users');
-const { idJoi } = require('../middlewares/errors');
+const { idJoi, avatarValidationJoi, changeUserJoi } = require('../middlewares/errors');
 
 router.get('/', getUsers);
 
@@ -10,12 +10,8 @@ router.get('/me', getMe);
 
 router.get('/:id', idJoi, getUserById);
 
-router.post('/signup', createUser);
+router.patch('/me/avatar', avatarValidationJoi, changeUser);
 
-router.post('/signin', login);
-
-router.patch('/me/avatar', changeUserAvatar);
-
-router.patch('/me', changeUser);
+router.patch('/me', changeUserJoi, changeUser);
 
 module.exports = router;

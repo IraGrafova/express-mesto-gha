@@ -1,21 +1,15 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
 const {
   AccessError,
   ValidationError,
   NotFound,
-} = require("../middlewares/errors");
+} = require('../middlewares/errors');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
-    .populate("likes")
+    .populate('likes')
     .then((cards) => res.status(200).send(cards))
-    .catch((err) =>
-      res.status(500).send({
-        message: "Internal Server Error",
-        err: err.message,
-        stack: err.stack,
-      })
-    );
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
@@ -25,34 +19,33 @@ const createCard = (req, res, next) => {
   })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.name === "CastError") {
-        throw new ValidationError(
-          "Переданы некорректные данные при создании карточки"
-        );
-      }
-    })
-    .catch(next);
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные при создании карточки'));
+      } next(err);
+    });
 };
 
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
-    .populate("owner")
-    .orFail(() => new Error("Not found"))
+    .populate('owner')
+    .orFail(() => new NotFound('id не найден'))
+    // eslint-disable-next-line consistent-return
     .then((card) => {
+      // eslint-disable-next-line eqeqeq
       if (req.user._id != card.owner._id) {
-        next(new AccessError("Отсутствуют права для данного действия"));
+        next(new AccessError('Отсутствуют права для данного действия'));
+      } else {
+        return Card.deleteOne(card).then(() => {
+          res.send(card);
+        });
       }
-      Card.deleteOne(card).then((item) => {
-        return res.send(card);
-      });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        next(new ValidationError("Неверный id"));
-      } else if (err.message === "Not found") {
-        next(new NotFound());
-      }
-      next();
+      if (err.name === 'CastError') {
+        next(new ValidationError('Неверный id'));
+      } else if (err.message === 'Not found') {
+        next(new NotFound('id не найден'));
+      } else { next(err); }
     })
     .catch(next);
 };
@@ -61,17 +54,17 @@ const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
+    { new: true },
   )
-    .orFail(() => new Error("Not found"))
+    .orFail(() => new Error('Not found'))
     .then((likes) => res.status(200).send(likes))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         throw new ValidationError(
-          "Переданы некорректные данные для постановки/снятия лайка"
+          'Переданы некорректные данные для постановки/снятия лайка',
         );
-      } else if (err.message === "Not found") {
-        throw new NotFound();
+      } else if (err.message === 'Not found') {
+        throw new NotFound('id не найден');
       }
     })
     .catch(next);
@@ -81,17 +74,17 @@ const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
-    .orFail(() => new Error("Not found"))
+    .orFail(() => new Error('Not found'))
     .then((likes) => res.status(200).send(likes))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         throw new ValidationError(
-          "Переданы некорректные данные для постановки/снятии лайка"
+          'Переданы некорректные данные для постановки/снятии лайка',
         );
-      } else if (err.message === "Not found") {
-        throw new NotFound("Передан несуществующий _id карточки");
+      } else if (err.message === 'Not found') {
+        throw new NotFound('Передан несуществующий _id карточки');
       }
     })
     .catch(next);

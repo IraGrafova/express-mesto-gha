@@ -1,13 +1,12 @@
-const bcrypt = require("bcryptjs");
-const jsonWebToken = require("jsonwebtoken");
-const User = require("../models/user");
-const { isValidObjectId } = require("mongoose");
+const bcrypt = require('bcryptjs');
+const jsonWebToken = require('jsonwebtoken');
+const User = require('../models/user');
 const {
   SignupError,
   ValidationError,
   LoginError,
   NotFound,
-} = require("../middlewares/errors");
+} = require('../middlewares/errors');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -17,21 +16,19 @@ const getUsers = (req, res, next) => {
 
 const getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => new Error("Not found"))
+    .orFail(() => new NotFound('id не найден'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
-    .orFail(() => new Error("Not found"))
+    .orFail(() => new NotFound('id не найден'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === "CastError") {
-        throw new ValidationError("Неверный id");
-      } else if (err.message === "Not found") {
-        throw new NotFound();
-      }
+      if (err.name === 'CastError') {
+        throw new ValidationError('Неверный id');
+      } else { next(err); }
     })
     .catch(next);
 };
@@ -47,7 +44,7 @@ const createUser = (req, res, next) => {
         .catch((err) => {
           if (err.code === 11000) {
             next(
-              new SignupError("Пользователь с указанным email уже существует")
+              new SignupError('Пользователь с указанным email уже существует'),
             );
           }
         });
@@ -59,19 +56,13 @@ const login = (req, res, next) => {
   // вытаскиваем email и password из запроса
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    throw new ValidationError("Введите данные");
-
-    // res.status(403).send({ message: 'Введите данные' });
-    // return;
-  }
-
   // найти пользователя
   User.findOne({ email })
-    .select("+password")
-    .orFail(() => new LoginError("Пользователь не найден"))
-    .then((user) => {
+    .select('+password')
+    .orFail(() => new LoginError('Пользователь не найден'))
+    .then((user) =>
       // проверить совпадает ли пароль
+      // eslint-disable-next-line implicit-arrow-linebreak
       bcrypt.compare(password, user.password).then((isValidUser) => {
         if (isValidUser) {
           // если совпадает - вернуть пользователя
@@ -80,10 +71,10 @@ const login = (req, res, next) => {
             {
               _id: user._id,
             },
-            "SECRET"
+            'SECRET',
           );
           // прикрепить его к куке
-          res.cookie("jwt", jwt, {
+          res.cookie('jwt', jwt, {
             maxAge: 360000,
             httpOnly: true,
             sameSite: true,
@@ -91,10 +82,9 @@ const login = (req, res, next) => {
           res.send({ data: user.toJSON() });
         } else {
           // если не совпадает - вернуть ошибку
-          next(new LoginError("Передан неверный логин или пароль"));
+          next(new LoginError('Передан неверный логин или пароль'));
         }
-      });
-    })
+      }).catch(next))
     .catch(next);
 };
 
@@ -103,17 +93,7 @@ const changeUser = (req, res, next) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
   })
-    .orFail(() => new Error("Not found"))
-    .then((user) => res.status(200).send(user))
-    .catch(next);
-};
-
-const changeUserAvatar = (req, res, next) => {
-  User.findByIdAndUpdate(req.user._id, req.body, {
-    new: true, // обработчик then получит на вход обновлённую запись
-    runValidators: true,
-  })
-    .orFail(() => new Error("Not found"))
+    .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
@@ -122,7 +102,6 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
-  changeUserAvatar,
   changeUser,
   login,
   getMe,

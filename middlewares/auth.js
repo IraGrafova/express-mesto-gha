@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'SECRET');
   } catch (err) {
-    next(new LoginError('Отсутствуют права для данного действия'));
+    throw (new LoginError('Отсутствуют права для данного действия'));
   }
 
   req.user = payload;

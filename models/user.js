@@ -5,21 +5,18 @@ const userSchema = new mongoose.Schema({
   name: { // имя пользователя, строка от 2 до 30 символов, обязательное поле
     default: 'Жак-Ив Кусто',
     type: String,
-    required: [true, 'Поле "name" должно быть заполнено'],
     minlength: [2, 'Минимальная длина поля "name" - 2'],
     maxlength: [30, 'Максимальная длина поля "name" - 30'],
   },
   about: { // информация о пользователе, строка от 2 до 30 символов, обязательное поле
     default: 'Исследователь',
     type: String,
-    required: [true, 'Поле "about" должно быть заполнено'],
     minlength: [2, 'Минимальная длина поля "about" - 2'],
     maxlength: [30, 'Максимальная длина поля "about" - 30'],
   },
   avatar: { // ссылка на аватарку, строка, обязательное поле
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     type: String,
-    required: [true, 'Поле "avatar" должно быть заполнено'],
     validate: {
       validator: (v) => validator.isURL(v),
       message: 'Некорректный URL',

@@ -27,10 +27,9 @@ const getUserById = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new ValidationError('Неверный id');
-      } else { next(err); }
-    })
-    .catch(next);
+        next(new ValidationError('Неверный id'));
+      } else next(err);
+    });
 };
 
 const createUser = (req, res, next) => {
@@ -46,7 +45,7 @@ const createUser = (req, res, next) => {
             next(
               new SignupError('Пользователь с указанным email уже существует'),
             );
-          }
+          } else next(err);
         });
     })
     .catch(next);
@@ -93,7 +92,7 @@ const changeUser = (req, res, next) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
   })
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFound('id не найден'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };

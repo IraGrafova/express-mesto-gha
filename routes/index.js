@@ -10,14 +10,14 @@ const {
   createUser, login,
 } = require('../controllers/users');
 
-router.post('/api/signin', signinJoi, login);
-router.post('/api/signup', signupJoi, createUser);
+router.post('/signin', signinJoi, login);
+router.post('/signup', signupJoi, createUser);
 
 router.use(auth);
 
-router.use('/api/users', userRoutes);
+router.use('/users', userRoutes);
 
-router.use('/api/cards', cardRoutes);
+router.use('/cards', cardRoutes);
 
 router.patch('*', (req, res, next) => {
   next(new NotFound('Страница не найдена'));
